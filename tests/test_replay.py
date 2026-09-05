@@ -77,6 +77,58 @@ class TestReplayEngine(unittest.TestCase):
         
         self.assertEqual(result1.to_dict(), result2.to_dict())
 
+    def test_baseline_event_trace_determinism(self):
+        """12. Baseline event traces are perfectly deterministic."""
+        result1 = self.engine.run(self.scenario, self.seed)
+        result2 = self.engine.run(self.scenario, self.seed)
+        
+        events1 = result1.baseline_result.events
+        events2 = result2.baseline_result.events
+        
+        self.assertEqual(len(events1), len(events2))
+        for e1, e2 in zip(events1, events2):
+            self.assertEqual(e1.event_id, e2.event_id)
+            self.assertEqual(e1.order, e2.order)
+            self.assertEqual(e1.timestamp_offset_ms, e2.timestamp_offset_ms)
+            self.assertEqual(e1.service, e2.service)
+            self.assertEqual(e1.event_type, e2.event_type)
+            self.assertEqual(e1.message, e2.message)
+            self.assertEqual(e1.candidate_id, e2.candidate_id)
+            self.assertEqual(e1.source_service, e2.source_service)
+            self.assertEqual(e1.destination_service, e2.destination_service)
+            self.assertEqual(e1.status, e2.status)
+
+    def test_counterfactual_event_trace_isolation(self):
+        """13. Counterfactual traces isolate behavior perfectly."""
+        result = self.engine.run(self.scenario, self.seed)
+        
+        # Select two replays that both still fail (e.g., ROUTE_CHANGE and ACCESS_RULE_CHANGE disabled)
+        cf1 = result.counterfactual_results[0]  # NET-001 disabled
+        cf2 = result.counterfactual_results[1]  # NET-002 disabled
+        
+        events1 = cf1.result.events
+        events2 = cf2.result.events
+        
+        self.assertEqual(len(events1), len(events2))
+        
+        for e1, e2 in zip(events1, events2):
+            self.assertEqual(e1.order, e2.order)
+            self.assertEqual(e1.timestamp_offset_ms, e2.timestamp_offset_ms)
+            self.assertEqual(e1.service, e2.service)
+            self.assertEqual(e1.event_type, e2.event_type)
+            self.assertEqual(e1.message, e2.message)
+            
+            # The only difference should be the status of the specific candidate evaluation
+            if e1.candidate_id in ["NET-001", "NET-002"]:
+                if e1.candidate_id == cf1.configuration.disabled_candidate_id:
+                    self.assertEqual(e1.status, "DISABLED")
+                    self.assertEqual(e2.status, "PASS")
+                elif e1.candidate_id == cf2.configuration.disabled_candidate_id:
+                    self.assertEqual(e1.status, "PASS")
+                    self.assertEqual(e2.status, "DISABLED")
+            else:
+                self.assertEqual(e1.status, e2.status)
+
 
 if __name__ == "__main__":
     unittest.main()
