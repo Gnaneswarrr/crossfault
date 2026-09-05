@@ -1,0 +1,85 @@
+:root {
+  /* Dark Forensics Theme */
+  --bg-color: #090A0F;
+  --panel-bg: rgba(255, 255, 255, 0.03);
+  --panel-border: 1px solid rgba(255, 255, 255, 0.1);
+  --text-primary: #FFFFFF;
+  --text-secondary: #8B949E;
+  
+  --color-success: #00E676;
+  --color-success-bg: rgba(0, 230, 118, 0.1);
+  --color-failure: #FF3366;
+  --color-failure-bg: rgba(255, 51, 102, 0.1);
+  --color-verified: #00E5FF;
+  --color-verified-bg: rgba(0, 229, 255, 0.1);
+  --color-ai: #B388FF;
+  --color-ai-bg: rgba(179, 136, 255, 0.1);
+  --color-warning: #FFB300;
+  
+  --font-primary: 'Inter', 'Geist', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+  overflow-y: scroll;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+code, pre, .mono {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.glass-panel {
+  background: var(--panel-bg);
+  border: var(--panel-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 8px;
+}

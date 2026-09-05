@@ -1,0 +1,77 @@
+.evidence-certificate {
+  border: 1px solid var(--color-verified);
+  background: var(--color-verified-bg);
+  box-shadow: 0 0 40px rgba(0, 229, 255, 0.05);
+  border-radius: 4px;
+}
+
+.cert-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid rgba(0, 229, 255, 0.2);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-verified);
+}
+
+.cert-body {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.cert-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cert-label {
+  font-size: 0.75rem;
+  color: var(--color-verified);
+  letter-spacing: 0.1em;
+  opacity: 0.8;
+}
+
+.cert-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.verified-text {
+  color: var(--color-verified);
+}
+
+.warning-text {
+  color: var(--color-warning);
+}
+
+.bound-text {
+  font-size: 0.9rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+.cert-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 179, 0, 0.1);
+  color: var(--color-warning);
+  padding: 1rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 179, 0, 0.3);
+  font-size: 0.85rem;
+}
+
+.cert-disclaimer {
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}

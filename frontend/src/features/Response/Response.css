@@ -1,0 +1,54 @@
+.response-container {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.response-header {
+  padding: 1rem 1.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.response-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.response-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.response-item:last-child {
+  border-bottom: none;
+}
+
+.response-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.checkbox-icon {
+  margin-top: 0.1rem;
+}
+
+.step-text {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.response-item.checked .step-text {
+  color: var(--text-secondary);
+  text-decoration: line-through;
+  opacity: 0.5;
+}

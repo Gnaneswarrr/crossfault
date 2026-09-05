@@ -1,0 +1,45 @@
+.ai-container {
+  border: 1px solid rgba(179, 136, 255, 0.3);
+  background: var(--color-ai-bg);
+}
+
+.ai-disclaimer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: rgba(179, 136, 255, 0.1);
+  border-bottom: 1px solid rgba(179, 136, 255, 0.2);
+  color: var(--color-ai);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.ai-body {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.ai-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ai-section-title {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--color-ai);
+  opacity: 0.9;
+}
+
+.ai-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+}

@@ -1,0 +1,147 @@
+.shell-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.shell-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: rgba(0, 0, 0, 0.5);
+  border-bottom: var(--panel-border);
+  flex-shrink: 0;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-text {
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  font-size: 1.1rem;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.controls label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.controls select,
+.controls input {
+  background: var(--panel-bg);
+  color: var(--text-primary);
+  border: var(--panel-border);
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+.run-button {
+  background: var(--color-verified-bg);
+  color: var(--color-verified);
+  border: 1px solid var(--color-verified);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+}
+
+.run-button:hover:not(:disabled) {
+  background: var(--color-verified);
+  color: #000;
+}
+
+.run-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.shell-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.shell-sidebar {
+  width: 250px;
+  border-right: var(--panel-border);
+  padding: 2rem 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.shell-sidebar nav ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.shell-sidebar nav li {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border-left: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.shell-sidebar nav li.active {
+  color: var(--text-primary);
+  border-left-color: var(--color-verified);
+  background: var(--panel-bg);
+}
+
+.shell-content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.phases-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  padding-bottom: 6rem;
+}
+
+.critical-error-panel, .success-panel {
+  padding: 3rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 4rem;
+}
+
+.critical-error-panel h2 {
+  color: var(--color-failure);
+  letter-spacing: 0.1em;
+}
+
+.success-panel h2 {
+  color: var(--color-success);
+  letter-spacing: 0.1em;
+}

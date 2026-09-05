@@ -1,0 +1,47 @@
+.phase-header {
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1rem;
+}
+
+.incident-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.incident-stat {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.stat-value.error {
+  color: var(--color-failure);
+}
+
+.incident-summary {
+  padding: 1.5rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.incident-summary strong {
+  color: var(--text-primary);
+}
