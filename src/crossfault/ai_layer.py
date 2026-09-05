@@ -19,11 +19,22 @@ class AIInterpretation:
     narrative_explanation: str
     negative_evidence_explanation: str
 
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "narrative_explanation": self.narrative_explanation,
+            "negative_evidence_explanation": self.negative_evidence_explanation,
+        }
+
 
 @dataclass(frozen=True)
 class AIRecommendations:
     """The AI's suggested remediation steps (NOT verified causal evidence)."""
     remediation_steps: List[str]
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "remediation_steps": self.remediation_steps,
+        }
 
 
 @dataclass(frozen=True)
@@ -35,6 +46,13 @@ class VerifiedAIResponse:
     verified_evidence: VerifiedInvestigationEvidence
     ai_interpretation: AIInterpretation
     ai_recommendations: AIRecommendations
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "verified_evidence": self.verified_evidence.to_dict(),
+            "ai_interpretation": self.ai_interpretation.to_dict(),
+            "ai_recommendations": self.ai_recommendations.to_dict(),
+        }
 
 
 class LLMClient(Protocol):
