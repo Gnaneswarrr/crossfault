@@ -51,6 +51,21 @@ class TestScenario(unittest.TestCase):
         self.assertIn("LIS Gateway", failure_event.message)
         self.assertIn("NET-004", failure_event.message)
 
+    def test_cf002_initialization(self):
+        from crossfault.scenario import create_cf002_scenario, AUTH_TOPOLOGY_PATH
+        scenario = create_cf002_scenario()
+        self.assertEqual(scenario.scenario_id, "CF-002")
+        self.assertEqual(scenario.application_input.workload_type, "PhysicianLogin")
+        self.assertEqual(scenario.topology_path, AUTH_TOPOLOGY_PATH)
+        self.assertEqual(len(scenario.candidates), 4)
+
+        # Check Candidate IDs and Types
+        candidate_ids = [c.candidate_id for c in scenario.candidates]
+        self.assertEqual(candidate_ids, ["NET-011", "NET-012", "NET-013", "NET-014"])
+
+        net_014 = next(c for c in scenario.candidates if c.candidate_id == "NET-014")
+        self.assertEqual(net_014.candidate_type.value, "ACCESS_RULE_CHANGE")
+        self.assertTrue(net_014.interrupts_path)
 
 if __name__ == "__main__":
     unittest.main()

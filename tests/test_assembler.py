@@ -156,5 +156,31 @@ class TestEvidenceAssembler(unittest.TestCase):
         self.assertTrue(len(matching_baseline_events) == 1)
         self.assertEqual(matching_baseline_events[0].candidate_id, "NET-004")
 
+    def test_j_cf002_assembly(self):
+        """Test J: CF-002 successfully extracts the auth topology path without hardcoding."""
+        from crossfault.scenario import create_cf002_scenario
+
+        scenario2 = create_cf002_scenario()
+        investigation2 = self.replay_engine.run(scenario2, self.seed)
+        analysis2 = self.analyzer.analyze(investigation2)
+        evidence2 = self.assembler.assemble(investigation2, analysis2)
+
+        self.assertIsInstance(evidence2, VerifiedInvestigationEvidence)
+        self.assertEqual(evidence2.causal_verdict, CausalVerdict.NECESSARY_FOR_OBSERVED_FAILURE)
+
+        # Verify the dependency path is the trace-derived CF-002 path
+        self.assertEqual(evidence2.dependency_path, (
+            "Physician Portal",
+            "Identity Provider",
+            "Patient Records API",
+            "Results Database"
+        ))
+
+        # Provenance: Divergence points to NET-014 (ACCESS_RULE_CHANGE)
+        self.assertIsNotNone(evidence2.divergence_event_id)
+        matching_baseline_events = [e for e in investigation2.baseline_result.events if e.event_id == evidence2.divergence_event_id]
+        self.assertTrue(len(matching_baseline_events) == 1)
+        self.assertEqual(matching_baseline_events[0].candidate_id, "NET-014")
+
 if __name__ == "__main__":
     unittest.main()

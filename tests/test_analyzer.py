@@ -166,5 +166,20 @@ class TestCausalAnalyzer(unittest.TestCase):
         self.assertIn("Missing baseline result", analysis.validation_error)
 
 
+    def test_cf002_causal_analysis(self):
+        from crossfault.scenario import create_cf002_scenario
+        scenario2 = create_cf002_scenario()
+        valid_evidence2 = self.replay_engine.run(scenario2, seed=48291)
+        analysis = self.analyzer.analyze(valid_evidence2)
+
+        self.assertEqual(analysis.status, AnalysisStatus.VALID)
+        self.assertEqual(analysis.investigation_verdict, CausalVerdict.NECESSARY_FOR_OBSERVED_FAILURE)
+        self.assertEqual(analysis.identified_candidate, "NET-014")
+
+        # Verify unrelated candidates are NOT_NECESSARY
+        net11_evidence = next(e for e in analysis.candidate_evidence if e.candidate_id == "NET-011")
+        self.assertEqual(net11_evidence.candidate_conclusion, CausalVerdict.NOT_NECESSARY)
+
+
 if __name__ == "__main__":
     unittest.main()

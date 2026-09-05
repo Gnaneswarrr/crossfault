@@ -42,6 +42,13 @@ def main(args: Optional[List[str]] = None) -> int:
         help="Random seed for deterministic simulation (default: 48291)",
     )
     parser.add_argument(
+        "--scenario",
+        type=str,
+        default="CF-001",
+        choices=["CF-001", "CF-002"],
+        help="Scenario ID to simulate (default: CF-001)",
+    )
+    parser.add_argument(
         "--json",
         action="store_true",
         help="Output structured simulation result as JSON",
@@ -54,7 +61,11 @@ def main(args: Optional[List[str]] = None) -> int:
 
     parsed_args = parser.parse_args(args)
 
-    scenario = create_initial_scenario()
+    if parsed_args.scenario == "CF-002":
+        from crossfault.scenario import create_cf002_scenario
+        scenario = create_cf002_scenario()
+    else:
+        scenario = create_initial_scenario()
     
     # Phase 2: Counterfactual Replay Investigation
     replay_engine = ReplayEngine()

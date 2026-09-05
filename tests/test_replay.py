@@ -130,5 +130,26 @@ class TestReplayEngine(unittest.TestCase):
                 self.assertEqual(e1.status, e2.status)
 
 
+    def test_cf002_expected_outcomes(self):
+        from crossfault.scenario import create_cf002_scenario
+        scenario2 = create_cf002_scenario()
+        result = self.engine.run(scenario2, self.seed)
+
+        self.assertEqual(result.baseline_result.status, DeploymentStatus.FAILED)
+
+        for cf in result.counterfactual_results:
+            if cf.configuration.disabled_candidate_id == "NET-014":  # ACCESS_RULE_CHANGE
+                self.assertEqual(cf.result.status, DeploymentStatus.SUCCESS)
+            else:
+                self.assertEqual(cf.result.status, DeploymentStatus.FAILED)
+
+    def test_cf002_investigation_determinism(self):
+        from crossfault.scenario import create_cf002_scenario
+        scenario2 = create_cf002_scenario()
+        result1 = self.engine.run(scenario2, self.seed)
+        result2 = self.engine.run(scenario2, self.seed)
+
+        self.assertEqual(result1.to_dict(), result2.to_dict())
+
 if __name__ == "__main__":
     unittest.main()
