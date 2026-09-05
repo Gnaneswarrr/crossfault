@@ -57,13 +57,13 @@ CrossFault is built in distinct modular phases. The following components define 
 *   **`SimulationEngine`**: Executes deterministic, multi-hop deployment scenarios.
 *   **`ReplayEngine`**: Orchestrates counterfactual isolation and replays the scenario.
 *   **`CausalAnalyzer`**: Processes replay evidence strictly without invoking the simulators.
-*   **Verified Evidence / future Evidence Assembly**: [NOT YET IMPLEMENTED]
+*   **`EvidenceAssembler`**: Extracts dependency paths and divergence provenance from deterministic event traces.
 *   **Future AI Investigator**: [NOT YET IMPLEMENTED]
 *   **Future AI Output Validator**: [NOT YET IMPLEMENTED]
 
 ## Testing
 
-CrossFault is rigorously tested. Currently, **28 automated tests** pass with 100% success. 
+CrossFault is rigorously tested. Currently, **37 automated tests** are passing.
 
 These tests enforce strict boundaries and cover:
 *   **Deterministic simulation**: Ensures RNG handling guarantees perfectly reproducible behavior.
@@ -78,11 +78,11 @@ These tests enforce strict boundaries and cover:
 ## Current Limitations
 
 CrossFault operates strictly within its bounded model constraints:
+*   **Individual Candidate Necessity**: CrossFault currently establishes *individual candidate necessity under bounded deterministic replay*. It does not claim to establish universal causality, joint necessity, or sufficiency.
 *   **Single-intervention counterfactuals only**: We test one candidate at a time.
 *   **No joint/multi-candidate causal analysis**: Combinatorial failures are not currently evaluated.
 *   **No claim of absolute real-world causality**: The output is strictly bounded to the determinism of the simulated models.
 *   **Healthcare environment is simulated**: It is not connected to live hospital infrastructure.
-*   **Dependency/path extraction is not yet implemented**: Path visualization from trace logs is planned for Phase 4.
 *   **LLM is not yet implemented**: Narrative generation is planned for Phase 5.
 *   **AI validator is not yet implemented**: Verification of AI output is planned for Phase 5.
 *   **API/UI are not yet implemented**: FastAPI and React are planned for future phases.
@@ -103,5 +103,15 @@ python -m crossfault
 
 ## Project Status
 
-**Completed through Phase 3.x.** 
-Phase 4 (Verified Evidence Assembly + Dependency Path Extraction) is the next implementation milestone.
+**Completed through Phase 4.** 
+
+**Next milestone: Second contrasting investigation scenario.**
+
+After that, the planned sequence is:
+* Second contrasting scenario
+* FastAPI/thin API layer
+* Minimal UI
+* LLM Investigator
+* AI Output Validator
+* Security/adversarial testing
+* Final integration and demo

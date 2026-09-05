@@ -59,29 +59,23 @@ Phase 3.x strengthens the unit testing suite to mathematically verify the fideli
 **Implemented Features:**
 *   **Complete baseline event trace determinism**: Tests assert that independent identically-seeded executions produce identical structured trace arrays matching at every single variable tier (timestamp, string message, sequence ID).
 *   **Counterfactual event trace isolation**: Tests assert that unrelated counterfactual branches are completely identical up to the precise moment a designated candidate network boundary is evaluated.
-*   **28 tests passing overall**: 100% coverage across expected boundaries and invariants.
+*   **37 automated tests passing**: rigorous assertions across expected boundaries and invariants.
 
 ---
 
 ## PHASE 4 — Verified Evidence Assembly + Dependency Path Extraction
-**Status: NOT STARTED**
+**Status: COMPLETE**
 
 Phase 4 bridges the structural simulation outputs into a packaged evidence model suitable for deterministic visualization and eventual AI summarization.
 
-**Intended Scope:**
-*   **Derive dependency/divergence path**: Map out the exact affected node chain relying upon recorded baseline and necessary-candidate-disabled traces.
-*   **No new simulation runs**: Ensure mapping utilizes only pre-existing execution data.
-*   **No causal logic changes**: Do not mutate Phase 3 verdicts.
-*   **Create a verified evidence model**: Standardize structural outputs for Phase 5.
-*   **Preserve provenance**: Tie every extracted dependency step strictly back to recorded events.
-*   **Explicitly represent limitations**: Bound the representation so visualizations map appropriately to the single-candidate model constraints.
-*   **Constraints**: No LLM, no UI, no FastAPI components in this phase.
-
-**Acceptance Criteria:**
-*   Resolved necessary verdict produces a non-empty ordered affected path derived strictly from trace histories.
-*   `NO_CAUSAL_CANDIDATE` and `AMBIGUOUS` do not artificially fabricate a path out of arbitrary data.
-*   Deterministic path extraction is guaranteed via unit tests.
-*   Analyzer, replay, and simulation layers are explicitly NOT rerun during assembly.
+**Implemented Capabilities:**
+*   **`VerifiedInvestigationEvidence`**: Immutable, tuple-based structure for storing final evidence.
+*   **`EvidenceAssembler`**: Performs deterministic evidence assembly without rerunning simulators.
+*   **Per-candidate Evidence & Necessary Candidate**: Preserves Phase 3 causal verdicts safely.
+*   **Trace-Derived Dependency/Divergence Path**: Maps out the exact affected node chain relying strictly upon recorded baseline and necessary-candidate-disabled traces.
+*   **`divergence_event_id`**: Stores the exact provenance ID of the first meaningful trace divergence.
+*   **Limitation Flags**: Handles non-resolved states correctly (e.g. `NO_SINGLE_VERIFIED_DEPENDENCY_PATH`).
+*   **Causal Boundary Note**: CrossFault currently establishes *individual candidate necessity under bounded deterministic replay*. It does not claim to establish universal causality, joint necessity, or sufficiency.
 
 ---
 
