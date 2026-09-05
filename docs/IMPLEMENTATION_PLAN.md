@@ -100,9 +100,16 @@ Phase 5 integrates AI components specifically constrained to *explain* the deter
 ---
 
 ## PHASE 6 — Second Scenario
-**Status: PLANNED**
+**Status: COMPLETE**
 
 Add one contrasting scenario with a different valid outcome and network topology, verifying the analysis ruleset generalizes beyond the hardcoded `CF-001` behavior.
+
+---
+
+## PHASE 6.x — Third Scenario (CF-003 / Joint Causality)
+**Status: NOT IMPLEMENTED — INTENTIONAL SCOPE BOUNDARY**
+
+CF-003 was designed to test combinatorial/interactive failure modes where multiple candidates jointly cause a failure. Implementing it would require combinatorial counterfactual replay and additional causal semantics, which are outside the current bounded experiment. The deterministic core is intentionally restricted to evaluating individual candidate necessity. Therefore, this scenario will NOT be implemented to prevent expanding the architecture into unbounded combinatorial causal logic.
 
 ---
 

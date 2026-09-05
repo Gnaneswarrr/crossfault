@@ -19,6 +19,18 @@ Instead of guessing causality based on timestamps, CrossFault explicitly tests i
 > [!NOTE]
 > CrossFault provides mathematical, bounded experimental conclusions. It does *not* use phrases like "mathematically proved root cause" or claim absolute real-world causality, as the simulation itself is a bounded model.
 
+## Causal Boundary
+
+CrossFault currently evaluates individual candidate necessity using bounded deterministic replay. 
+
+It does NOT claim to resolve:
+* joint causality
+* interacting network changes
+* combinatorial candidate relationships
+* sufficiency
+
+CrossFault deliberately bounds its causal experiment to individual candidate necessity. It does not infer joint causality without performing the corresponding combined counterfactual experiment. If multiple candidates jointly cause a failure, disabling each candidate individually may leave the failure unchanged. CrossFault can therefore return `NO_CAUSAL_CANDIDATE` rather than incorrectly inferring joint causality. This is an intentional scope boundary designed to prevent hallucinated causal relationships rather than an implementation failure.
+
 ## Simulated Healthcare Environment
 
 To demonstrate the causal analyzer, CrossFault uses a synthetic/simulated healthcare workflow inspired by real-world distributed systems (this is NOT a reproduction of proprietary myOnsite architecture). 
