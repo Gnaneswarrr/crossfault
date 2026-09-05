@@ -19,6 +19,21 @@ class CandidateType(str, Enum):
     LIS_PATH_INTERRUPTION = "LIS_PATH_INTERRUPTION"
 
 
+class CausalVerdict(str, Enum):
+    """Typed causal verdicts derived from bounded replay evidence."""
+    NECESSARY_FOR_OBSERVED_FAILURE = "NECESSARY_FOR_OBSERVED_FAILURE"
+    NOT_NECESSARY = "NOT_NECESSARY"
+    NO_CAUSAL_CANDIDATE = "NO_CAUSAL_CANDIDATE"
+    AMBIGUOUS = "AMBIGUOUS"
+
+
+class AnalysisStatus(str, Enum):
+    """Validity state of the causal analysis investigation."""
+    VALID = "VALID"
+    BASELINE_NOT_FAILED = "BASELINE_NOT_FAILED"
+    INVALID_EVIDENCE = "INVALID_EVIDENCE"
+
+
 @dataclass(frozen=True)
 class ApplicationInput:
     """Deterministic synthetic application deployment payload."""
@@ -192,4 +207,56 @@ class InvestigationReplayResult:
             "seed": self.seed,
             "baseline_result": self.baseline_result.to_dict(),
             "counterfactual_results": [r.to_dict() for r in self.counterfactual_results],
+        }
+
+
+@dataclass(frozen=True)
+class CandidateEvidence:
+    """Verified experimental evidence for a single candidate."""
+    scenario_id: str
+    seed: int
+    candidate_id: str
+    candidate_type: CandidateType
+    candidate_name: str
+    candidate_enabled_in_baseline: bool
+    candidate_enabled_in_counterfactual: bool
+    baseline_status: DeploymentStatus
+    counterfactual_status: DeploymentStatus
+    outcome_changed: bool
+    affected_path: List[str]
+    candidate_conclusion: CausalVerdict
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "scenario_id": self.scenario_id,
+            "seed": self.seed,
+            "candidate_id": self.candidate_id,
+            "candidate_type": self.candidate_type.value,
+            "candidate_name": self.candidate_name,
+            "candidate_enabled_in_baseline": self.candidate_enabled_in_baseline,
+            "candidate_enabled_in_counterfactual": self.candidate_enabled_in_counterfactual,
+            "baseline_status": self.baseline_status.value,
+            "counterfactual_status": self.counterfactual_status.value,
+            "outcome_changed": self.outcome_changed,
+            "affected_path": self.affected_path,
+            "candidate_conclusion": self.candidate_conclusion.value,
+        }
+
+
+@dataclass
+class InvestigationAnalysis:
+    """The overarching causal verdict derived from an investigation."""
+    status: AnalysisStatus
+    investigation_verdict: Optional[CausalVerdict]
+    identified_candidate: Optional[str]
+    candidate_evidence: List[CandidateEvidence]
+    validation_error: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "status": self.status.value,
+            "investigation_verdict": self.investigation_verdict.value if self.investigation_verdict else None,
+            "identified_candidate": self.identified_candidate,
+            "candidate_evidence": [e.to_dict() for e in self.candidate_evidence],
+            "validation_error": self.validation_error,
         }

@@ -1,8 +1,11 @@
 """Human-readable text output formatter for CrossFault simulation results."""
 
 from crossfault.models import (
+    AnalysisStatus,
     CandidateType,
+    CausalVerdict,
     DeploymentStatus,
+    InvestigationAnalysis,
     InvestigationReplayResult,
     SimulationResult,
 )
@@ -96,3 +99,64 @@ def format_investigation_summary(investigation: InvestigationReplayResult) -> st
         lines.append("Outcome did not change in any counterfactual replay.")
 
     return "\n".join(lines)
+
+
+def format_causal_analysis(analysis: InvestigationAnalysis) -> str:
+    """Formats an InvestigationAnalysis into human-readable causal verdicts."""
+    lines = [
+        "CAUSAL ANALYSIS:",
+        ""
+    ]
+
+    if analysis.status != AnalysisStatus.VALID:
+        lines.extend([
+            "Investigation Status:",
+            analysis.status.value,
+            ""
+        ])
+
+    if analysis.investigation_verdict:
+        lines.extend([
+            "Verdict:",
+            analysis.investigation_verdict.value,
+            ""
+        ])
+
+    if analysis.validation_error:
+        lines.extend([
+            "Validation Error:",
+            analysis.validation_error,
+            ""
+        ])
+
+    if analysis.identified_candidate:
+        identified_label = analysis.identified_candidate
+        # Try to find human readable name from evidence
+        for ev in analysis.candidate_evidence:
+            if ev.candidate_id == analysis.identified_candidate:
+                identified_label = CANDIDATE_LABELS.get(ev.candidate_type, ev.candidate_type.value)
+                break
+        
+        lines.extend([
+            "Candidate:",
+            identified_label,
+            ""
+        ])
+
+        # Print detailed verified evidence for the identified candidate
+        for ev in analysis.candidate_evidence:
+            if ev.candidate_id == analysis.identified_candidate:
+                changed_str = "YES" if ev.outcome_changed else "NO"
+                lines.extend([
+                    "Verified Evidence:",
+                    f"Baseline: {ev.baseline_status.value}",
+                    f"Without {identified_label}: {ev.counterfactual_status.value}",
+                    f"Outcome changed: {changed_str}",
+                    "",
+                    "Bound:",
+                    "Necessary for reproducing the observed failure under the bounded deterministic replay experiment.",
+                    ""
+                ])
+                break
+
+    return "\n".join(lines).strip()

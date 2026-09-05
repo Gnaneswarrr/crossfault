@@ -6,7 +6,12 @@ import json
 import sys
 from typing import List, Optional
 
-from crossfault.formatter import format_investigation_summary, format_simulation_summary
+from crossfault.analyzer import CausalAnalyzer
+from crossfault.formatter import (
+    format_causal_analysis,
+    format_investigation_summary,
+    format_simulation_summary,
+)
 from crossfault.replay import ReplayEngine
 from crossfault.scenario import create_initial_scenario
 
@@ -53,10 +58,22 @@ def main(args: Optional[List[str]] = None) -> int:
     replay_engine = ReplayEngine()
     investigation_result = replay_engine.run(scenario=scenario, seed=parsed_args.seed)
 
+    # Phase 3: Causal Analysis
+    causal_analyzer = CausalAnalyzer()
+    analysis_result = causal_analyzer.analyze(investigation_result)
+
     if parsed_args.json:
-        print(json.dumps(investigation_result.to_dict(), indent=2))
+        # Output the complete structure: baseline + replays + causal analysis
+        output = investigation_result.to_dict()
+        output["analysis"] = analysis_result.to_dict()
+        print(json.dumps(output, indent=2))
     else:
+        # Print Phase 2 summary
         print(format_investigation_summary(investigation_result))
+        print("")
+        
+        # Print Phase 3 causal analysis
+        print(format_causal_analysis(analysis_result))
         
         if parsed_args.verbose:
             print("\nDetailed Baseline Event Log:")
