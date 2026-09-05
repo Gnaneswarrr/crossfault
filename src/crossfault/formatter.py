@@ -8,6 +8,7 @@ from crossfault.models import (
     InvestigationAnalysis,
     InvestigationReplayResult,
     SimulationResult,
+    VerifiedInvestigationEvidence,
 )
 
 
@@ -158,5 +159,35 @@ def format_causal_analysis(analysis: InvestigationAnalysis) -> str:
                     ""
                 ])
                 break
+
+    return "\n".join(lines).strip()
+
+
+def format_verified_evidence(evidence: VerifiedInvestigationEvidence) -> str:
+    """Formats the VerifiedInvestigationEvidence path output."""
+    lines = [
+        "VERIFIED EVIDENCE ASSEMBLY:",
+        ""
+    ]
+
+    if evidence.limitation_flags:
+        lines.append("Limitations:")
+        for flag in evidence.limitation_flags:
+            lines.append(f"- {flag.value}")
+        lines.append("")
+
+    if evidence.dependency_path:
+        lines.extend([
+            "Dependency / Divergence Path:",
+            " → ".join(evidence.dependency_path),
+            ""
+        ])
+        
+    if evidence.divergence_event_id:
+        lines.extend([
+            "Divergence Provenance:",
+            f"Event ID: {evidence.divergence_event_id}",
+            ""
+        ])
 
     return "\n".join(lines).strip()

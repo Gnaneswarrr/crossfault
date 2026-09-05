@@ -7,10 +7,12 @@ import sys
 from typing import List, Optional
 
 from crossfault.analyzer import CausalAnalyzer
+from crossfault.assembler import EvidenceAssembler
 from crossfault.formatter import (
     format_causal_analysis,
     format_investigation_summary,
     format_simulation_summary,
+    format_verified_evidence,
 )
 from crossfault.replay import ReplayEngine
 from crossfault.scenario import create_initial_scenario
@@ -62,10 +64,15 @@ def main(args: Optional[List[str]] = None) -> int:
     causal_analyzer = CausalAnalyzer()
     analysis_result = causal_analyzer.analyze(investigation_result)
 
+    # Phase 4: Verified Evidence Assembly
+    assembler = EvidenceAssembler()
+    verified_evidence = assembler.assemble(investigation_result, analysis_result)
+
     if parsed_args.json:
-        # Output the complete structure: baseline + replays + causal analysis
+        # Output the complete structure
         output = investigation_result.to_dict()
         output["analysis"] = analysis_result.to_dict()
+        output["verified_evidence"] = verified_evidence.to_dict()
         print(json.dumps(output, indent=2))
     else:
         # Print Phase 2 summary
@@ -74,6 +81,10 @@ def main(args: Optional[List[str]] = None) -> int:
         
         # Print Phase 3 causal analysis
         print(format_causal_analysis(analysis_result))
+        print("")
+
+        # Print Phase 4 verified evidence path
+        print(format_verified_evidence(verified_evidence))
         
         if parsed_args.verbose:
             print("\nDetailed Baseline Event Log:")

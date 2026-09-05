@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class DeploymentStatus(str, Enum):
@@ -32,6 +32,11 @@ class AnalysisStatus(str, Enum):
     VALID = "VALID"
     BASELINE_NOT_FAILED = "BASELINE_NOT_FAILED"
     INVALID_EVIDENCE = "INVALID_EVIDENCE"
+
+
+class LimitationFlag(str, Enum):
+    """Flags indicating bounds or limitations of the gathered evidence."""
+    NO_SINGLE_VERIFIED_DEPENDENCY_PATH = "NO_SINGLE_VERIFIED_DEPENDENCY_PATH"
 
 
 @dataclass(frozen=True)
@@ -259,4 +264,34 @@ class InvestigationAnalysis:
             "identified_candidate": self.identified_candidate,
             "candidate_evidence": [e.to_dict() for e in self.candidate_evidence],
             "validation_error": self.validation_error,
+        }
+
+
+@dataclass(frozen=True)
+class VerifiedInvestigationEvidence:
+    """Immutable verified evidence assembly including dependency paths."""
+    scenario_id: str
+    seed: int
+    analysis_status: AnalysisStatus
+    causal_verdict: Optional[CausalVerdict]
+    baseline_outcome: DeploymentStatus
+    per_candidate_evidence: Tuple[CandidateEvidence, ...]
+    necessary_candidate: Optional[str]
+    dependency_path: Tuple[str, ...]
+    divergence_event_id: Optional[str]
+    """The baseline event ID corresponding to the first meaningful divergence between the baseline and the necessary-candidate-disabled counterfactual trace."""
+    limitation_flags: Tuple[LimitationFlag, ...]
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "scenario_id": self.scenario_id,
+            "seed": self.seed,
+            "analysis_status": self.analysis_status.value,
+            "causal_verdict": self.causal_verdict.value if self.causal_verdict else None,
+            "baseline_outcome": self.baseline_outcome.value,
+            "per_candidate_evidence": [e.to_dict() for e in self.per_candidate_evidence],
+            "necessary_candidate": self.necessary_candidate,
+            "dependency_path": list(self.dependency_path),
+            "divergence_event_id": self.divergence_event_id,
+            "limitation_flags": [f.value for f in self.limitation_flags],
         }
