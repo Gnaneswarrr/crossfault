@@ -6,8 +6,8 @@ import json
 import sys
 from typing import List, Optional
 
-from crossfault.engine import SimulationEngine
-from crossfault.formatter import format_simulation_summary
+from crossfault.formatter import format_investigation_summary, format_simulation_summary
+from crossfault.replay import ReplayEngine
 from crossfault.scenario import create_initial_scenario
 
 
@@ -48,16 +48,19 @@ def main(args: Optional[List[str]] = None) -> int:
     parsed_args = parser.parse_args(args)
 
     scenario = create_initial_scenario()
-    engine = SimulationEngine(scenario=scenario, seed=parsed_args.seed)
-    result = engine.run()
+    
+    # Phase 2: Counterfactual Replay Investigation
+    replay_engine = ReplayEngine()
+    investigation_result = replay_engine.run(scenario=scenario, seed=parsed_args.seed)
 
     if parsed_args.json:
-        print(json.dumps(result.to_dict(), indent=2))
+        print(json.dumps(investigation_result.to_dict(), indent=2))
     else:
-        print(format_simulation_summary(result))
+        print(format_investigation_summary(investigation_result))
+        
         if parsed_args.verbose:
-            print("\nDetailed Event Log:")
-            for event in result.events:
+            print("\nDetailed Baseline Event Log:")
+            for event in investigation_result.baseline_result.events:
                 print(
                     f" [{event.order:02d}] +{event.timestamp_offset_ms:6.2f}ms "
                     f"[{event.status:12s}] {event.service}: {event.message}"

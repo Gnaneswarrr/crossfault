@@ -55,6 +55,7 @@ class NetworkCandidate:
     affected_source: Optional[str] = None
     affected_destination: Optional[str] = None
     interrupts_path: bool = False
+    is_enabled: bool = True
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -64,6 +65,7 @@ class NetworkCandidate:
             "affected_source": self.affected_source,
             "affected_destination": self.affected_destination,
             "interrupts_path": self.interrupts_path,
+            "is_enabled": self.is_enabled,
         }
 
 
@@ -139,4 +141,55 @@ class SimulationResult:
             "application_input": self.application_input.to_dict(),
             "failure_path": self.failure_path,
             "events": [e.to_dict() for e in self.events],
+        }
+
+
+@dataclass(frozen=True)
+class ReplayConfiguration:
+    """Configuration isolated for a specific replay run."""
+    scenario_id: str
+    seed: int
+    disabled_candidate_id: Optional[str]
+    application_input: ApplicationInput
+    topology_path: List[str]
+    candidates: List[NetworkCandidate]
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "scenario_id": self.scenario_id,
+            "seed": self.seed,
+            "disabled_candidate_id": self.disabled_candidate_id,
+            "application_input": self.application_input.to_dict(),
+            "topology_path": self.topology_path,
+            "candidates": [c.to_dict() for c in self.candidates],
+        }
+
+
+@dataclass
+class CounterfactualResult:
+    """The complete result of an isolated replay."""
+    configuration: ReplayConfiguration
+    result: SimulationResult
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "configuration": self.configuration.to_dict(),
+            "result": self.result.to_dict(),
+        }
+
+
+@dataclass
+class InvestigationReplayResult:
+    """The aggregate findings of an entire replay investigation for a scenario."""
+    scenario_id: str
+    seed: int
+    baseline_result: SimulationResult
+    counterfactual_results: List[CounterfactualResult]
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "scenario_id": self.scenario_id,
+            "seed": self.seed,
+            "baseline_result": self.baseline_result.to_dict(),
+            "counterfactual_results": [r.to_dict() for r in self.counterfactual_results],
         }

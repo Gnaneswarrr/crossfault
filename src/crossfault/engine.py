@@ -83,6 +83,14 @@ class SimulationEngine:
         # 2. Log Candidate Network Events Evaluation
         for candidate in self.scenario.candidates:
             eval_msg = f"Candidate network change evaluated: [{candidate.candidate_type.value}] {candidate.description}"
+            
+            if not candidate.is_enabled:
+                status = "DISABLED"
+            elif candidate.interrupts_path:
+                status = "INTERRUPTING"
+            else:
+                status = "PASS"
+
             self._log_event(
                 event_type=EventType.NETWORK_EVENT_EVALUATION,
                 service=candidate.affected_source or topology.path[0],
@@ -90,7 +98,7 @@ class SimulationEngine:
                 candidate_id=candidate.candidate_id,
                 source_service=candidate.affected_source,
                 destination_service=candidate.affected_destination,
-                status="INTERRUPTING" if candidate.interrupts_path else "PASS",
+                status=status,
             )
 
         # 3. Simulate Topology Path Communication Hops

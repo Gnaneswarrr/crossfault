@@ -1,6 +1,11 @@
 """Human-readable text output formatter for CrossFault simulation results."""
 
-from crossfault.models import CandidateType, DeploymentStatus, SimulationResult
+from crossfault.models import (
+    CandidateType,
+    DeploymentStatus,
+    InvestigationReplayResult,
+    SimulationResult,
+)
 
 
 # Human-friendly labels for CandidateTypes
@@ -46,3 +51,48 @@ def format_simulation_summary(result: SimulationResult) -> str:
         f"{failure_path_str}"
     )
     return summary
+
+
+def format_investigation_summary(investigation: InvestigationReplayResult) -> str:
+    """
+    Formats an InvestigationReplayResult into a concise, human-readable summary.
+    """
+    baseline_status = investigation.baseline_result.status.value
+
+    lines = [
+        f"Scenario: {investigation.scenario_id}",
+        f"Seed: {investigation.seed}",
+        "",
+        f"BASELINE:",
+        f"{baseline_status}",
+        "",
+        f"COUNTERFACTUAL REPLAYS:",
+        ""
+    ]
+
+    changed_candidates = []
+
+    for cf in investigation.counterfactual_results:
+        disabled_id = cf.configuration.disabled_candidate_id
+        
+        # Find the candidate label
+        label = "Unknown Candidate"
+        for c in investigation.baseline_result.evaluated_candidates:
+            if c.candidate_id == disabled_id:
+                label = CANDIDATE_LABELS.get(c.candidate_type, c.candidate_type.value)
+                break
+                
+        outcome = cf.result.status.value
+        lines.append(f"Disable {label} → {outcome}")
+
+        if cf.result.status != investigation.baseline_result.status:
+            changed_candidates.append(label)
+
+    lines.append("")
+    if changed_candidates:
+        labels_str = " and ".join(changed_candidates)
+        lines.append(f"Outcome changed when {labels_str} was disabled.")
+    else:
+        lines.append("Outcome did not change in any counterfactual replay.")
+
+    return "\n".join(lines)

@@ -16,6 +16,9 @@ class NetworkEvaluator:
         Returns the NetworkCandidate that interrupts the hop, or None if the hop succeeds.
         """
         for candidate in self._candidates:
+            if not candidate.is_enabled:
+                continue
+
             if not candidate.interrupts_path:
                 continue
 
