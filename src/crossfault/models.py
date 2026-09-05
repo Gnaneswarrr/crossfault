@@ -1,0 +1,142 @@
+"""Domain models for CrossFault simulator."""
+
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
+
+class DeploymentStatus(str, Enum):
+    """Status of the deployment simulation run."""
+    SUCCESS = "SUCCESS"
+    FAILED = "FAILED"
+
+
+class CandidateType(str, Enum):
+    """Types of candidate network changes."""
+    ROUTE_CHANGE = "ROUTE_CHANGE"
+    ACCESS_RULE_CHANGE = "ACCESS_RULE_CHANGE"
+    DNS_CHANGE = "DNS_CHANGE"
+    LIS_PATH_INTERRUPTION = "LIS_PATH_INTERRUPTION"
+
+
+@dataclass(frozen=True)
+class ApplicationInput:
+    """Deterministic synthetic application deployment payload."""
+    request_id: str
+    workload_type: str
+    target_environment: str
+    specimen_type: str
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "request_id": self.request_id,
+            "workload_type": self.workload_type,
+            "target_environment": self.target_environment,
+            "specimen_type": self.specimen_type,
+        }
+
+
+class EventType(str, Enum):
+    """Types of simulation lifecycle and communication events."""
+    DEPLOYMENT_START = "DEPLOYMENT_START"
+    NETWORK_EVENT_EVALUATION = "NETWORK_EVENT_EVALUATION"
+    HOP_ATTEMPT = "HOP_ATTEMPT"
+    HOP_SUCCESS = "HOP_SUCCESS"
+    HOP_FAILURE = "HOP_FAILURE"
+    DEPLOYMENT_END = "DEPLOYMENT_END"
+
+
+@dataclass(frozen=True)
+class NetworkCandidate:
+    """Represents a candidate network change that occurred around the deployment time."""
+    candidate_id: str
+    candidate_type: CandidateType
+    description: str
+    affected_source: Optional[str] = None
+    affected_destination: Optional[str] = None
+    interrupts_path: bool = False
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "candidate_id": self.candidate_id,
+            "candidate_type": self.candidate_type.value,
+            "description": self.description,
+            "affected_source": self.affected_source,
+            "affected_destination": self.affected_destination,
+            "interrupts_path": self.interrupts_path,
+        }
+
+
+@dataclass(frozen=True)
+class SimulationEvent:
+    """Structured event recorded during simulation execution."""
+    event_id: str
+    order: int
+    timestamp_offset_ms: float
+    service: str
+    event_type: EventType
+    message: str
+    candidate_id: Optional[str] = None
+    source_service: Optional[str] = None
+    destination_service: Optional[str] = None
+    status: str = "INFO"
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "event_id": self.event_id,
+            "order": self.order,
+            "timestamp_offset_ms": round(self.timestamp_offset_ms, 2),
+            "service": self.service,
+            "event_type": self.event_type.value,
+            "message": self.message,
+            "candidate_id": self.candidate_id,
+            "source_service": self.source_service,
+            "destination_service": self.destination_service,
+            "status": self.status,
+        }
+
+
+@dataclass(frozen=True)
+class Scenario:
+    """Configuration for a deployment scenario to simulate."""
+    scenario_id: str
+    name: str
+    description: str
+    topology_path: List[str]
+    candidates: List[NetworkCandidate]
+    application_input: ApplicationInput
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "scenario_id": self.scenario_id,
+            "name": self.name,
+            "description": self.description,
+            "topology_path": self.topology_path,
+            "candidates": [c.to_dict() for c in self.candidates],
+            "application_input": self.application_input.to_dict(),
+        }
+
+
+@dataclass
+class SimulationResult:
+    """Structured simulation output."""
+    scenario_id: str
+    seed: int
+    status: DeploymentStatus
+    topology_path: List[str]
+    evaluated_candidates: List[NetworkCandidate]
+    application_input: ApplicationInput
+    failure_path: List[str]
+    events: List[SimulationEvent] = field(default_factory=list)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "scenario_id": self.scenario_id,
+            "seed": self.seed,
+            "status": self.status.value,
+            "topology_path": self.topology_path,
+            "evaluated_candidates": [c.to_dict() for c in self.evaluated_candidates],
+            "application_input": self.application_input.to_dict(),
+            "failure_path": self.failure_path,
+            "events": [e.to_dict() for e in self.events],
+        }
