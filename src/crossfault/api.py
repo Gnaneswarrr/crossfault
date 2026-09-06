@@ -23,6 +23,13 @@ def get_service() -> InvestigationService:
         _service = InvestigationService()
     return _service
 
+import re
+
+def _sanitize_error_detail(err_msg: str) -> str:
+    """Removes absolute file paths and sensitive system details from error messages."""
+    sanitized = re.sub(r'([A-Za-z]:\\[^\s:"\']+|/[^\s:"\']+)', '[path]', err_msg)
+    return sanitized
+
 @app.get("/health")
 def health_check():
     """Simple health check endpoint."""
@@ -36,7 +43,7 @@ def investigate(scenario: str = "CF-001", seed: int = 48291):
     if scenario not in ("CF-001", "CF-002"):
         raise HTTPException(
             status_code=400, 
-            detail=f"Invalid scenario '{scenario}'. Must be 'CF-001' or 'CF-002'."
+            detail="Invalid scenario. Must be 'CF-001' or 'CF-002'."
         )
         
     svc = get_service()
@@ -47,4 +54,4 @@ def investigate(scenario: str = "CF-001", seed: int = 48291):
         return JSONResponse(content=response.to_dict())
     except Exception as e:
         # Unanticipated engine or deterministic pipeline failures
-        raise HTTPException(status_code=502, detail=str(e))
+        raise HTTPException(status_code=502, detail=_sanitize_error_detail(str(e)))

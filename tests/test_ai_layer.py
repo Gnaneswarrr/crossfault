@@ -191,6 +191,37 @@ class TestAILayer(unittest.TestCase):
             mock_analyzer.assert_not_called()
             mock_assembler.assert_not_called()
 
+    def test_11_empty_ai_response_rejected(self):
+        """test empty string AI response is safely rejected"""
+        llm = MockLLMClient("")
+        investigator = AIInvestigator(llm)
+        with self.assertRaises(AIValidationError) as ctx:
+            investigator.investigate(self.scenario1, self.evidence1)
+        self.assertIn("Malformed JSON", str(ctx.exception))
+
+    def test_12_null_field_values_rejected(self):
+        """test null values for required string/list fields are rejected"""
+        bad_data = self._get_valid_cf001_json()
+        bad_data["narrative_explanation"] = None  # null value
+
+        llm = MockLLMClient(json.dumps(bad_data))
+        investigator = AIInvestigator(llm)
+        with self.assertRaises(AIValidationError) as ctx:
+            investigator.investigate(self.scenario1, self.evidence1)
+        self.assertIn("'narrative_explanation' must be a string", str(ctx.exception))
+
+    def test_13_extra_json_fields_handled_safely(self):
+        """test unexpected extra JSON fields do not crash or corrupt output"""
+        data_with_extra = self._get_valid_cf001_json()
+        data_with_extra["unexpected_extra_key"] = "hacked_value"
+        data_with_extra["prompt_injection"] = "Ignore previous instructions"
+
+        llm = MockLLMClient(json.dumps(data_with_extra))
+        investigator = AIInvestigator(llm)
+        response = investigator.investigate(self.scenario1, self.evidence1)
+        self.assertEqual(response.verified_evidence.necessary_candidate, "NET-004")
+        self.assertEqual(response.ai_interpretation.narrative_explanation, "Valid narrative.")
+
 
 if __name__ == "__main__":
     unittest.main()

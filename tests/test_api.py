@@ -126,6 +126,48 @@ class TestAPI(unittest.TestCase):
         self.client.get("/api/investigate")
         self.mock_service.run_investigation.assert_called_once()
 
+    def test_10_path_disclosure_prevention_in_502_error(self):
+        """10. Unanticipated exceptions strip absolute filesystem paths from 502 detail."""
+        self.mock_service.run_investigation.side_effect = RuntimeError(
+            "Failed reading configuration file at C:\\Users\\hp\\secret\\data.json"
+        )
+        response = self.client.get("/api/investigate")
+        self.assertEqual(response.status_code, 502)
+        detail = response.json()["detail"]
+        self.assertNotIn("C:\\Users\\hp\\secret\\data.json", detail)
+        self.assertIn("[path]", detail)
+
+    def test_11_invalid_seed_input_handling(self):
+        """11. Non-integer seed returns HTTP 422 validation error; negative seed handled cleanly."""
+        # Non-integer seed string -> 422 Unprocessable Entity
+        response_str = self.client.get("/api/investigate?seed=invalid_seed")
+        self.assertEqual(response_str.status_code, 422)
+
+        # Negative seed -> passed to service cleanly without crashing
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {"verified_evidence": {}}
+        self.mock_service.run_investigation.return_value = mock_response
+
+        response_neg = self.client.get("/api/investigate?seed=-48291")
+        self.assertEqual(response_neg.status_code, 200)
+        self.mock_service.run_investigation.assert_called_with(scenario_id="CF-001", seed=-48291)
+
+    def test_12_adversarial_scenario_strings(self):
+        """12. Path traversal and script injection scenario inputs returned as 400 clean errors."""
+        adversarial_scenarios = [
+            "../../etc/passwd",
+            "<script>alert(1)</script>",
+            "CF-003",
+            "ADMIN",
+        ]
+        for bad_scenario in adversarial_scenarios:
+            response = self.client.get(f"/api/investigate?scenario={bad_scenario}")
+            self.assertEqual(response.status_code, 400)
+            self.assertIn("Invalid scenario", response.json()["detail"])
+            # Ensure no stack trace or raw input reflection vulnerability
+            self.assertNotIn("<script>", response.json()["detail"])
+            self.assertNotIn("passwd", response.json()["detail"])
+
 
 if __name__ == "__main__":
     unittest.main()
