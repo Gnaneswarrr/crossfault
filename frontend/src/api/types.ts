@@ -43,6 +43,8 @@ export interface AIRecommendations {
 
 export interface VerifiedAIResponse {
   verified_evidence: VerifiedInvestigationEvidence;
-  ai_interpretation: AIInterpretation;
-  ai_recommendations: AIRecommendations;
+  ai_interpretation: AIInterpretation | null;
+  ai_recommendations: AIRecommendations | null;
+  ai_status?: string;
+  ai_error?: string | null;
 }

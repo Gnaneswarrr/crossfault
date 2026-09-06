@@ -10,63 +10,82 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 2rem;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(10, 15, 30, 0.85);
+  backdrop-filter: blur(12px);
   border-bottom: var(--panel-border);
   flex-shrink: 0;
+  gap: 2rem;
+  flex-wrap: wrap;
 }
 
 .logo-area {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-shrink: 0;
 }
 
 .logo-text {
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.25em;
+  font-size: 1.2rem;
+  color: var(--text-primary);
 }
 
 .controls {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.75rem;
+  flex-wrap: wrap;
 }
 
-.controls label {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
+.control-item {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-.controls select,
-.controls input {
-  background: var(--panel-bg);
+.control-item label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--text-secondary);
+}
+
+.control-item select,
+.control-item input {
+  background: rgba(15, 23, 42, 0.8);
   color: var(--text-primary);
   border: var(--panel-border);
-  padding: 0.4rem 0.8rem;
-  border-radius: 4px;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
   font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.control-item select:focus,
+.control-item input:focus {
+  border-color: #00E5FF;
 }
 
 .run-button {
   background: var(--color-verified-bg);
   color: var(--color-verified);
   border: 1px solid var(--color-verified);
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+  padding: 0.55rem 1.25rem;
+  border-radius: 6px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   transition: all 0.2s ease;
+  margin-top: auto;
 }
 
 .run-button:hover:not(:disabled) {
   background: var(--color-verified);
   color: #000;
+  box-shadow: 0 0 15px rgba(0, 230, 118, 0.3);
 }
 
 .run-button:disabled {

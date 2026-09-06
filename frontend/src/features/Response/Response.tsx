@@ -1,12 +1,41 @@
-import React, { useState } from 'react';
-import { CheckSquare, Square } from 'lucide-react';
-import { AIRecommendations } from '../../api/types';
+import { useState } from 'react';
+import { CheckSquare, Square, CheckCircle2, AlertCircle } from 'lucide-react';
+import type { AIRecommendations } from '../../api/types';
 import './Response.css';
 
-export default function ResponseChecklist({ recommendations }: { recommendations: AIRecommendations }) {
+export default function ResponseChecklist({ recommendations }: { recommendations: AIRecommendations | null }) {
   const [checkedItems, setCheckedItems] = useState<Set<number>>(new Set());
 
-  if (!recommendations || recommendations.remediation_steps.length === 0) return null;
+  if (!recommendations || !recommendations.remediation_steps || recommendations.remediation_steps.length === 0) {
+    return (
+      <div className="phase-container">
+        <h3 className="phase-header">07 &mdash; RESPONSE</h3>
+        <div className="response-container glass-panel response-unavailable-panel">
+          <div className="verified-complete-banner">
+            <CheckCircle2 size={18} color="var(--color-verified, #00E676)" />
+            <span>VERIFIED INVESTIGATION COMPLETE</span>
+          </div>
+
+          <div className="response-header warning">
+            <AlertCircle size={18} />
+            <div className="response-status-title-group">
+              <span className="response-title">AI RECOMMENDATIONS</span>
+              <span className="response-status-pill">Currently unavailable</span>
+            </div>
+          </div>
+
+          <div className="response-body">
+            <p className="response-unavailable-text">
+              No AI-generated remediation recommendations were accepted.
+            </p>
+            <p className="response-unavailable-subtext">
+              The AI is optional. Verified causal evidence remains available.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const toggleCheck = (index: number) => {
     const next = new Set(checkedItems);

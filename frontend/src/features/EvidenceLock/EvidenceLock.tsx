@@ -1,6 +1,6 @@
-import React from 'react';
-import { ShieldCheck, AlertTriangle } from 'lucide-react';
-import { VerifiedInvestigationEvidence } from '../../api/types';
+import { ShieldCheck, AlertTriangle, CheckCircle2, XCircle } from 'lucide-react';
+import type { VerifiedInvestigationEvidence } from '../../api/types';
+import { getCategoryInfo } from '../../utils/candidateFormatter';
 import './EvidenceLock.css';
 
 export default function EvidenceLock({ evidence }: { evidence: VerifiedInvestigationEvidence }) {
@@ -42,7 +42,52 @@ export default function EvidenceLock({ evidence }: { evidence: VerifiedInvestiga
           <div className="cert-row">
             <div className="cert-label">EXPERIMENT BOUND</div>
             <div className="cert-value bound-text">
-              Necessary for reproducing the observed failure under the bounded deterministic replay experiment.
+              "Necessary for reproducing the observed failure under the bounded deterministic replay experiment."
+            </div>
+          </div>
+
+          {/* Compact Evidence Summary Matrix */}
+          <div className="evidence-matrix-box">
+            <div className="cert-label">EXPERIMENTAL REPLAY MATRIX</div>
+            <div className="matrix-rows">
+              <div className="matrix-item baseline-row">
+                <span className="matrix-label mono">Baseline (All ON)</span>
+                <span className="matrix-arrow">&rarr;</span>
+                <span className={`matrix-outcome ${evidence.baseline_outcome.toLowerCase()}`}>
+                  {evidence.baseline_outcome}
+                </span>
+              </div>
+
+              {evidence.per_candidate_evidence.map((candidate) => {
+                const isSelected = candidate.outcome_changed || candidate.candidate_id === evidence.necessary_candidate;
+                const category = getCategoryInfo(candidate.candidate_type);
+                const Icon = category.icon;
+
+                return (
+                  <div
+                    key={candidate.candidate_id}
+                    className={`matrix-item ${isSelected ? 'matrix-item-selected' : ''}`}
+                  >
+                    <span className="matrix-label mono">{candidate.candidate_id} OFF</span>
+                    <div className={`category-pill ${category.badgeClass}`} style={{ fontSize: '0.68rem', padding: '0.15rem 0.5rem' }}>
+                      <Icon size={12} />
+                      <span>{category.shortLabel}</span>
+                    </div>
+                    <span className="matrix-arrow">&rarr;</span>
+                    <span className={`matrix-outcome ${candidate.counterfactual_status.toLowerCase()}`}>
+                      {candidate.counterfactual_status === 'SUCCESS' ? (
+                        <CheckCircle2 size={14} />
+                      ) : (
+                        <XCircle size={14} />
+                      )}
+                      <span>{candidate.counterfactual_status}</span>
+                    </span>
+                    {isSelected && (
+                      <span className="matrix-badge">✓ CAUSAL CANDIDATE</span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
           

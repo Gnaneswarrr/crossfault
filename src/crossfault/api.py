@@ -45,10 +45,6 @@ def investigate(scenario: str = "CF-001", seed: int = 48291):
         response = svc.run_investigation(scenario_id=scenario, seed=seed)
         # We explicitly serialize the response to a dictionary using the to_dict() boundaries
         return JSONResponse(content=response.to_dict())
-    except AIValidationError as e:
-        # AI validation explicitly failed against deterministic bounds
-        raise HTTPException(status_code=500, detail=str(e))
     except Exception as e:
-        # Catch network/provider issues or unanticipated engine failures
-        # Using 502 Bad Gateway for upstream LLM provider failures
+        # Unanticipated engine or deterministic pipeline failures
         raise HTTPException(status_code=502, detail=str(e))

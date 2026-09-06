@@ -27,20 +27,49 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.75rem;
   font-size: 0.75rem;
 }
 
 .candidate-id {
   color: var(--text-secondary);
   letter-spacing: 0.05em;
+  font-weight: 700;
 }
 
-.candidate-type {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+.category-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+}
+
+.category-firewall {
+  background: rgba(255, 87, 34, 0.15);
+  color: #FF7043;
+  border: 1px solid rgba(255, 87, 34, 0.35);
+}
+
+.category-route {
+  background: rgba(0, 229, 255, 0.12);
+  color: #00E5FF;
+  border: 1px solid rgba(0, 229, 255, 0.35);
+}
+
+.category-dns {
+  background: rgba(179, 136, 255, 0.15);
+  color: #B388FF;
+  border: 1px solid rgba(179, 136, 255, 0.35);
+}
+
+.category-path {
+  background: rgba(255, 179, 0, 0.15);
+  color: #FFB300;
+  border: 1px solid rgba(255, 179, 0, 0.35);
 }
 
 .candidate-body {

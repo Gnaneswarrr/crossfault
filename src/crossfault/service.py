@@ -1,7 +1,7 @@
 """Service layer for CrossFault investigation orchestration."""
 
 from typing import Optional
-from crossfault.ai_layer import AIInvestigator, LLMClient, VerifiedAIResponse
+from crossfault.ai_layer import AIInvestigator, AIValidationError, LLMClient, VerifiedAIResponse
 from crossfault.analyzer import CausalAnalyzer
 from crossfault.assembler import EvidenceAssembler
 from crossfault.gemini_client import GeminiClient
@@ -13,12 +13,23 @@ class InvestigationService:
     """Centralizes investigation orchestration."""
 
     def __init__(self, llm_client: Optional[LLMClient] = None):
-        if llm_client is None:
-            llm_client = GeminiClient()
-        self.ai_investigator = AIInvestigator(llm_client)
+        self._llm_client = llm_client
+        self._ai_investigator: Optional[AIInvestigator] = None
+        if llm_client is not None:
+            self._ai_investigator = AIInvestigator(llm_client)
         self.replay_engine = ReplayEngine()
         self.analyzer = CausalAnalyzer()
         self.assembler = EvidenceAssembler()
+
+    @property
+    def ai_investigator(self) -> Optional[AIInvestigator]:
+        if self._ai_investigator is None:
+            try:
+                client = self._llm_client if self._llm_client is not None else GeminiClient()
+                self._ai_investigator = AIInvestigator(client)
+            except Exception:
+                return None
+        return self._ai_investigator
 
     def run_investigation(self, scenario_id: str, seed: int = 48291) -> VerifiedAIResponse:
         """
@@ -51,4 +62,24 @@ class InvestigationService:
         verified_evidence = self.assembler.assemble(investigation_result, analysis_result)
 
         # Phase 5: AI Investigation
-        return self.ai_investigator.investigate(scenario, verified_evidence)
+        try:
+            investigator = self.ai_investigator
+            if investigator is None:
+                raise RuntimeError("AI client unavailable")
+            return investigator.investigate(scenario, verified_evidence)
+        except AIValidationError as e:
+            return VerifiedAIResponse(
+                verified_evidence=verified_evidence,
+                ai_interpretation=None,
+                ai_recommendations=None,
+                ai_status="unavailable",
+                ai_error="AI interpretation unavailable: response failed verification boundary.",
+            )
+        except Exception:
+            return VerifiedAIResponse(
+                verified_evidence=verified_evidence,
+                ai_interpretation=None,
+                ai_recommendations=None,
+                ai_status="unavailable",
+                ai_error="AI interpretation unavailable: provider quota or availability limit.",
+            )

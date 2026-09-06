@@ -1,5 +1,4 @@
-import React from 'react';
-import { VerifiedInvestigationEvidence } from '../../api/types';
+import type { VerifiedInvestigationEvidence } from '../../api/types';
 import './Incident.css';
 
 export default function Incident({ evidence }: { evidence: VerifiedInvestigationEvidence }) {

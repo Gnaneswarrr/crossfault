@@ -3,7 +3,7 @@
 import json
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Protocol
+from typing import Any, Dict, List, Optional, Protocol
 
 from crossfault.models import Scenario, VerifiedInvestigationEvidence
 
@@ -44,15 +44,20 @@ class VerifiedAIResponse:
     verified evidence, interpretation, and recommendations.
     """
     verified_evidence: VerifiedInvestigationEvidence
-    ai_interpretation: AIInterpretation
-    ai_recommendations: AIRecommendations
+    ai_interpretation: Optional[AIInterpretation] = None
+    ai_recommendations: Optional[AIRecommendations] = None
+    ai_status: str = "available"
+    ai_error: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "verified_evidence": self.verified_evidence.to_dict(),
-            "ai_interpretation": self.ai_interpretation.to_dict(),
-            "ai_recommendations": self.ai_recommendations.to_dict(),
+            "ai_interpretation": self.ai_interpretation.to_dict() if self.ai_interpretation else None,
+            "ai_recommendations": self.ai_recommendations.to_dict() if self.ai_recommendations else None,
+            "ai_status": self.ai_status,
+            "ai_error": self.ai_error,
         }
+
 
 
 class LLMClient(Protocol):

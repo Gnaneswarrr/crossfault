@@ -75,3 +75,79 @@
   color: var(--text-secondary);
   font-size: 0.9rem;
 }
+
+.evidence-matrix-box {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.matrix-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+.matrix-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 0.85rem;
+}
+
+.matrix-item.baseline-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.matrix-item-selected {
+  background: rgba(0, 230, 118, 0.1);
+  border: 1px solid rgba(0, 230, 118, 0.3);
+}
+
+.matrix-label {
+  min-width: 140px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.matrix-arrow {
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
+
+.matrix-outcome {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 700;
+}
+
+.matrix-outcome.failed {
+  color: var(--color-failure, #FF3366);
+}
+
+.matrix-outcome.success {
+  color: var(--color-success, #00E676);
+}
+
+.matrix-badge {
+  margin-left: auto;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  background: rgba(0, 230, 118, 0.2);
+  color: #00E676;
+  border: 1px solid rgba(0, 230, 118, 0.4);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}

@@ -1,8 +1,10 @@
-import { VerifiedAIResponse } from './types';
+import type { VerifiedAIResponse } from './types';
 
 export class APIError extends Error {
-  constructor(public status: number, message: string) {
+  status: number;
+  constructor(status: number, message: string) {
     super(message);
+    this.status = status;
     this.name = 'APIError';
   }
 }

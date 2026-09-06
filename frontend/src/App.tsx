@@ -1,4 +1,3 @@
-import React from 'react';
 import InvestigationShell from './layout/InvestigationShell';
 
 function App() {

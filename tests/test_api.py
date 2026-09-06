@@ -78,14 +78,26 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 502)
         self.assertIn("Upstream API is down", response.json()["detail"])
 
-    def test_7_ai_validation_failure(self):
-        """7. AI validation failure becomes a clean HTTP error."""
-        self.mock_service.run_investigation.side_effect = AIValidationError("Expected NET-004, got NET-999")
+    def test_7_ai_failure_returns_200_with_unavailable_state(self):
+        """7. AI failure returns HTTP 200 with verified evidence and explicit AI-unavailable state."""
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {
+            "verified_evidence": {"necessary_candidate": "NET-004"},
+            "ai_interpretation": None,
+            "ai_recommendations": None,
+            "ai_status": "unavailable",
+            "ai_error": "AI interpretation unavailable: provider quota or availability limit."
+        }
+        self.mock_service.run_investigation.return_value = mock_response
         
         response = self.client.get("/api/investigate")
         
-        self.assertEqual(response.status_code, 500)
-        self.assertIn("Expected NET-004", response.json()["detail"])
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["ai_status"], "unavailable")
+        self.assertIsNone(data["ai_interpretation"])
+        self.assertIsNone(data["ai_recommendations"])
+        self.assertEqual(data["verified_evidence"]["necessary_candidate"], "NET-004")
 
     def test_8_response_separation(self):
         """8. Response clearly separates verified evidence from AI interpretation/recommendations."""

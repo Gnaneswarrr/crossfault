@@ -93,35 +93,105 @@
   gap: 1rem;
 }
 
+.baseline-state-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+.baseline-flow-arrow {
+  text-align: center;
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
 .experiment-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem 2rem;
+  padding: 1rem 1.5rem;
   border-left: 4px solid transparent;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .experiment-row.outcome-changed {
   border-left-color: var(--color-success);
-  background: rgba(0, 230, 118, 0.05);
+  border-color: rgba(0, 230, 118, 0.4);
+  background: linear-gradient(90deg, rgba(0, 230, 118, 0.08), rgba(0, 0, 0, 0.2));
+  box-shadow: 0 0 15px rgba(0, 230, 118, 0.1);
 }
 
-.exp-candidate {
-  font-size: 1.1rem;
+.exp-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 220px;
 }
 
-.exp-candidate strong {
+.candidate-id-badge {
+  background: rgba(0, 229, 255, 0.1);
+  color: #00E5FF;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.candidate-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.exp-toggle-state {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 700;
   color: var(--text-secondary);
-  font-weight: 400;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
 }
 
-.exp-arrow {
+.exp-toggle-state .state-on {
+  color: var(--color-failure);
+}
+
+.exp-toggle-state .state-off {
+  color: var(--color-success);
+}
+
+.exp-toggle-state .arrow {
+  opacity: 0.5;
+}
+
+.exp-outcome-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.exp-outcome-group .arrow {
   color: var(--text-secondary);
   opacity: 0.5;
 }
 
 .exp-outcome {
-  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1.1rem;
   font-weight: 700;
   letter-spacing: 0.05em;
 }
@@ -133,4 +203,37 @@
 .exp-outcome.success {
   color: var(--color-success);
   text-shadow: 0 0 10px rgba(0, 230, 118, 0.5);
+}
+
+.exp-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+}
+
+.outcome-changed-badge {
+  background: rgba(0, 230, 118, 0.2);
+  color: #00E676;
+  border: 1px solid rgba(0, 230, 118, 0.4);
+}
+
+.necessary-candidate-badge {
+  background: rgba(0, 229, 255, 0.2);
+  color: #00E5FF;
+  border: 1px solid rgba(0, 229, 255, 0.4);
+}
+
+.unchanged-badge {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ShieldAlert, AlertTriangle } from 'lucide-react';
 import { runInvestigation, APIError } from '../api/client';
-import { VerifiedAIResponse } from '../api/types';
+import type { VerifiedAIResponse } from '../api/types';
 
 // Feature components
 import Incident from '../features/Incident/Incident';
@@ -11,6 +11,7 @@ import PathTrace from '../features/PathTrace/PathTrace';
 import EvidenceLock from '../features/EvidenceLock/EvidenceLock';
 import AIInvestigator from '../features/AIInvestigator/AIInvestigator';
 import ResponseChecklist from '../features/Response/Response';
+import InvestigationResult from '../features/InvestigationResult/InvestigationResult';
 
 // Core components
 import { ErrorState } from '../components/LoadingError';
@@ -63,26 +64,31 @@ export default function InvestigationShell() {
     <div className="shell-container">
       <header className="shell-header">
         <div className="logo-area">
-          <ShieldAlert className="logo-icon" size={24} color="#00E5FF" />
+          <ShieldAlert className="logo-icon" size={26} color="#00E5FF" />
           <span className="logo-text">CROSSFAULT</span>
         </div>
         <div className="controls">
-          <label>
-            SCENARIO:
-            <select value={scenario} onChange={(e) => setScenario(e.target.value)}>
+          <div className="control-item">
+            <label htmlFor="scenario-select">SCENARIO</label>
+            <select
+              id="scenario-select"
+              value={scenario}
+              onChange={(e) => setScenario(e.target.value)}
+            >
               <option value="CF-001">CF-001</option>
               <option value="CF-002">CF-002</option>
             </select>
-          </label>
-          <label>
-            SEED:
+          </div>
+          <div className="control-item">
+            <label htmlFor="seed-input">SEED</label>
             <input
+              id="seed-input"
               type="number"
               value={seed}
-              onChange={(e) => setSeed(parseInt(e.target.value))}
+              onChange={(e) => setSeed(parseInt(e.target.value) || 0)}
               className="mono"
             />
-          </label>
+          </div>
           <button className="run-button" onClick={handleRunInvestigation} disabled={loading}>
             {loading ? 'RUNNING...' : 'RE-RUN INVESTIGATION'}
           </button>
@@ -93,18 +99,26 @@ export default function InvestigationShell() {
         <aside className="shell-sidebar">
           <nav>
             <ul>
-              {navItems.map((item) => (
-                <li key={item} className={activePhase === item ? 'active' : ''}>
-                  {item}
-                </li>
-              ))}
+              {navItems.map((item, index) => {
+                const phaseId = `phase-0${index + 1}`;
+                return (
+                  <li
+                    key={item}
+                    className={activePhase === item ? 'active' : ''}
+                    onClick={() => {
+                      setActivePhase(item);
+                      document.getElementById(phaseId)?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                  >
+                    {item}
+                  </li>
+                );
+              })}
             </ul>
           </nav>
         </aside>
 
-        <main className="shell-content" onScroll={(e) => {
-          // Simple scroll spy logic would go here
-        }}>
+        <main className="shell-content">
           {loading && <LoadingSkeleton />}
           
           {error && <ErrorState error={error} onRetry={handleRunInvestigation} />}
@@ -146,6 +160,9 @@ export default function InvestigationShell() {
                   </section>
                   <section id="phase-07">
                     <ResponseChecklist recommendations={data.ai_recommendations} />
+                  </section>
+                  <section id="phase-result">
+                    <InvestigationResult evidence={data.verified_evidence} />
                   </section>
                 </>
               )}
