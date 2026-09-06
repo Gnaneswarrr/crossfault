@@ -56,6 +56,10 @@ export default function ResponseChecklist({ recommendations }: { recommendations
           <span>AI RECOMMENDATIONS</span>
         </div>
         
+        <div className="response-section-heading">
+          <h4 className="response-section-title">WHAT SHOULD WE DO?</h4>
+        </div>
+
         <div className="response-list">
           {recommendations.remediation_steps.map((step, index) => {
             const isChecked = checkedItems.has(index);

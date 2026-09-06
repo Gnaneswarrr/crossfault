@@ -18,6 +18,20 @@
   border-top-right-radius: 8px;
 }
 
+.ai-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.ai-subtitle {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  opacity: 0.85;
+  letter-spacing: normal;
+}
+
 .ai-body {
   padding: 2rem;
   display: flex;

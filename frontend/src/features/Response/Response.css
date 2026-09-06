@@ -13,6 +13,18 @@
   border-top-right-radius: 8px;
 }
 
+.response-section-heading {
+  padding: 1.25rem 1.5rem 0.5rem;
+}
+
+.response-section-title {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--color-ai, #B388FF);
+  opacity: 0.9;
+  margin: 0;
+}
+
 .response-list {
   display: flex;
   flex-direction: column;

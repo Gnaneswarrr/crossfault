@@ -40,17 +40,22 @@ export default function AIInvestigator({ interpretation }: { interpretation: AII
       <div className="ai-container glass-panel">
         <div className="ai-disclaimer">
           <Bot size={18} />
-          <span>AI Interpretation of Verified Evidence</span>
+          <div className="ai-header-text">
+            <span>AI Interpretation of Verified Evidence</span>
+            <span className="ai-subtitle">
+              AI explains verified replay evidence; it does not create or override the causal verdict.
+            </span>
+          </div>
         </div>
         
         <div className="ai-body">
           <div className="ai-section">
-            <h4 className="ai-section-title">NARRATIVE</h4>
+            <h4 className="ai-section-title">WHAT HAPPENED?</h4>
             <p className="ai-text">{interpretation.narrative_explanation}</p>
           </div>
           
           <div className="ai-section">
-            <h4 className="ai-section-title">NEGATIVE EVIDENCE EXPLANATION</h4>
+            <h4 className="ai-section-title">WHY THIS CANDIDATE?</h4>
             <p className="ai-text">{interpretation.negative_evidence_explanation}</p>
           </div>
         </div>
