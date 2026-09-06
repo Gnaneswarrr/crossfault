@@ -67,5 +67,36 @@ class TestScenario(unittest.TestCase):
         self.assertEqual(net_014.candidate_type.value, "ACCESS_RULE_CHANGE")
         self.assertTrue(net_014.interrupts_path)
 
+    def test_cf004_initialization(self):
+        from crossfault.scenario import create_cf004_scenario, ICU_TOPOLOGY_PATH
+        scenario = create_cf004_scenario()
+        self.assertEqual(scenario.scenario_id, "CF-004")
+        self.assertEqual(scenario.application_input.workload_type, "ICUTelemetryStream")
+        self.assertEqual(scenario.topology_path, ICU_TOPOLOGY_PATH)
+        self.assertEqual(len(scenario.candidates), 4)
+
+        candidate_ids = [c.candidate_id for c in scenario.candidates]
+        self.assertEqual(candidate_ids, ["NET-031", "NET-032", "NET-033", "NET-034"])
+
+        net_033 = next(c for c in scenario.candidates if c.candidate_id == "NET-033")
+        self.assertEqual(net_033.candidate_type.value, "ROUTE_CHANGE")
+        self.assertTrue(net_033.interrupts_path)
+
+    def test_cf005_initialization(self):
+        from crossfault.scenario import create_cf005_scenario, PHARMACY_TOPOLOGY_PATH
+        scenario = create_cf005_scenario()
+        self.assertEqual(scenario.scenario_id, "CF-005")
+        self.assertEqual(scenario.application_input.workload_type, "PharmacyMedDispense")
+        self.assertEqual(scenario.topology_path, PHARMACY_TOPOLOGY_PATH)
+        self.assertEqual(len(scenario.candidates), 4)
+
+        candidate_ids = [c.candidate_id for c in scenario.candidates]
+        self.assertEqual(candidate_ids, ["NET-041", "NET-042", "NET-043", "NET-044"])
+
+        net_043 = next(c for c in scenario.candidates if c.candidate_id == "NET-043")
+        self.assertEqual(net_043.candidate_type.value, "DNS_CHANGE")
+        self.assertTrue(net_043.interrupts_path)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -144,62 +144,82 @@ describe('InvestigationShell Integration', () => {
     expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
   });
 
-  test('scenario switching (CF-001 -> CF-002 -> CF-001) isolates evidence without stale state', async () => {
-    const mockCF002Data = {
+  test('scenario switching across (CF-001 -> CF-002 -> CF-004 -> CF-005 -> CF-001) isolates evidence without stale state', async () => {
+    const createMockScenarioData = (scenarioId: string, candidateId: string, candidateType: string) => ({
       verified_evidence: {
         ...mockData.verified_evidence,
-        scenario_id: 'CF-002',
-        necessary_candidate: 'NET-014',
+        scenario_id: scenarioId,
+        necessary_candidate: candidateId,
         per_candidate_evidence: [
           {
-            candidate_id: 'NET-014',
-            candidate_type: 'ACCESS_RULE_CHANGE' as any,
-            candidate_name: 'Drop Medical Record Outbound Rule',
+            candidate_id: candidateId,
+            candidate_type: candidateType as any,
+            candidate_name: `Candidate ${candidateId}`,
             candidate_enabled_in_baseline: true,
             candidate_enabled_in_counterfactual: false,
             baseline_status: 'FAILED' as any,
             counterfactual_status: 'SUCCESS' as any,
             outcome_changed: true,
-            affected_path: ['Clinic', 'Gateway', 'EHR'],
+            affected_path: ['ServiceA', 'ServiceB'],
             candidate_conclusion: 'NECESSARY_FOR_OBSERVED_FAILURE' as any
           }
         ]
       },
       ai_interpretation: mockData.ai_interpretation,
       ai_recommendations: mockData.ai_recommendations
-    };
+    });
+
+    const mockCF002 = createMockScenarioData('CF-002', 'NET-014', 'ACCESS_RULE_CHANGE');
+    const mockCF004 = createMockScenarioData('CF-004', 'NET-033', 'ROUTE_CHANGE');
+    const mockCF005 = createMockScenarioData('CF-005', 'NET-043', 'DNS_CHANGE');
 
     (client.runInvestigation as any)
       .mockResolvedValueOnce(mockData as any)
-      .mockResolvedValueOnce(mockCF002Data as any)
+      .mockResolvedValueOnce(mockCF002 as any)
+      .mockResolvedValueOnce(mockCF004 as any)
+      .mockResolvedValueOnce(mockCF005 as any)
       .mockResolvedValueOnce(mockData as any);
 
     render(<InvestigationShell />);
 
-    // Initially loads CF-001 (NET-004)
+    // 1. Initially loads CF-001 (NET-004)
     await waitFor(() => {
       expect(screen.getAllByText(/NET-004/).length).toBeGreaterThan(0);
     });
 
-    // Switch scenario dropdown to CF-002
     const scenarioSelect = screen.getByLabelText('SCENARIO');
-    fireEvent.change(scenarioSelect, { target: { value: 'CF-002' } });
-    fireEvent.click(screen.getByText('RE-RUN INVESTIGATION'));
+    const rerunBtn = screen.getByText('RE-RUN INVESTIGATION');
 
-    // Verify CF-002 data loaded (NET-014) and old NET-004 is cleared
+    // 2. Switch to CF-002 (NET-014)
+    fireEvent.change(scenarioSelect, { target: { value: 'CF-002' } });
+    fireEvent.click(rerunBtn);
     await waitFor(() => {
       expect(screen.getAllByText(/NET-014/).length).toBeGreaterThan(0);
       expect(screen.queryByText(/NET-004/)).not.toBeInTheDocument();
     });
 
-    // Switch back to CF-001
-    fireEvent.change(scenarioSelect, { target: { value: 'CF-001' } });
-    fireEvent.click(screen.getByText('RE-RUN INVESTIGATION'));
+    // 3. Switch to CF-004 (NET-033)
+    fireEvent.change(scenarioSelect, { target: { value: 'CF-004' } });
+    fireEvent.click(rerunBtn);
+    await waitFor(() => {
+      expect(screen.getAllByText(/NET-033/).length).toBeGreaterThan(0);
+      expect(screen.queryByText(/NET-014/)).not.toBeInTheDocument();
+    });
 
-    // Verify CF-001 data re-loaded and NET-014 is cleared
+    // 4. Switch to CF-005 (NET-043)
+    fireEvent.change(scenarioSelect, { target: { value: 'CF-005' } });
+    fireEvent.click(rerunBtn);
+    await waitFor(() => {
+      expect(screen.getAllByText(/NET-043/).length).toBeGreaterThan(0);
+      expect(screen.queryByText(/NET-033/)).not.toBeInTheDocument();
+    });
+
+    // 5. Switch back to CF-001 (NET-004)
+    fireEvent.change(scenarioSelect, { target: { value: 'CF-001' } });
+    fireEvent.click(rerunBtn);
     await waitFor(() => {
       expect(screen.getAllByText(/NET-004/).length).toBeGreaterThan(0);
-      expect(screen.queryByText(/NET-014/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/NET-043/)).not.toBeInTheDocument();
     });
   });
 });

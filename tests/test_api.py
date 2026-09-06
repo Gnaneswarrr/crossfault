@@ -53,6 +53,30 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.json(), {"verified_evidence": {"causal_candidate_id": "NET-014"}})
         self.mock_service.run_investigation.assert_called_once_with(scenario_id="CF-002", seed=48291)
 
+    def test_3b_cf004_endpoint_works(self):
+        """3b. CF-004 endpoint works with a mocked service."""
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {"verified_evidence": {"causal_candidate_id": "NET-033"}}
+        self.mock_service.run_investigation.return_value = mock_response
+
+        response = self.client.get("/api/investigate?scenario=CF-004")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"verified_evidence": {"causal_candidate_id": "NET-033"}})
+        self.mock_service.run_investigation.assert_called_once_with(scenario_id="CF-004", seed=48291)
+
+    def test_3c_cf005_endpoint_works(self):
+        """3c. CF-005 endpoint works with a mocked service."""
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {"verified_evidence": {"causal_candidate_id": "NET-043"}}
+        self.mock_service.run_investigation.return_value = mock_response
+
+        response = self.client.get("/api/investigate?scenario=CF-005")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"verified_evidence": {"causal_candidate_id": "NET-043"}})
+        self.mock_service.run_investigation.assert_called_once_with(scenario_id="CF-005", seed=48291)
+
     def test_4_default_seed(self):
         """4. Default seed is 48291."""
         mock_response = MagicMock()

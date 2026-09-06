@@ -99,5 +99,58 @@ class TestInvestigationService(unittest.TestCase):
             self.assertIn("Replay memory corruption", str(ctx.exception))
 
 
+    def test_cf004_investigation_execution(self):
+        """Verify CF-004 produces verified evidence with NET-033 as necessary candidate."""
+        service = InvestigationService(llm_client=SuccessfulLLMClient())
+        response = service.run_investigation("CF-004", seed=48291)
+
+        evidence = response.verified_evidence
+        self.assertEqual(evidence.scenario_id, "CF-004")
+        self.assertEqual(evidence.baseline_outcome.value, "FAILED")
+        self.assertEqual(evidence.causal_verdict, CausalVerdict.NECESSARY_FOR_OBSERVED_FAILURE)
+        self.assertEqual(evidence.necessary_candidate, "NET-033")
+
+        # Verify candidate counterfactual outcomes
+        candidate_map = {c.candidate_id: c for c in evidence.per_candidate_evidence}
+        self.assertEqual(candidate_map["NET-031"].counterfactual_status.value, "FAILED")
+        self.assertFalse(candidate_map["NET-031"].outcome_changed)
+        self.assertEqual(candidate_map["NET-032"].counterfactual_status.value, "FAILED")
+        self.assertFalse(candidate_map["NET-032"].outcome_changed)
+        self.assertEqual(candidate_map["NET-033"].counterfactual_status.value, "SUCCESS")
+        self.assertTrue(candidate_map["NET-033"].outcome_changed)
+        self.assertEqual(candidate_map["NET-034"].counterfactual_status.value, "FAILED")
+        self.assertFalse(candidate_map["NET-034"].outcome_changed)
+
+        # Verify trace-derived dependency path and divergence
+        self.assertIn("ICU Gateway Router", evidence.dependency_path)
+        self.assertIsNotNone(evidence.divergence_event_id)
+
+    def test_cf005_investigation_execution(self):
+        """Verify CF-005 produces verified evidence with NET-043 as necessary candidate."""
+        service = InvestigationService(llm_client=SuccessfulLLMClient())
+        response = service.run_investigation("CF-005", seed=48291)
+
+        evidence = response.verified_evidence
+        self.assertEqual(evidence.scenario_id, "CF-005")
+        self.assertEqual(evidence.baseline_outcome.value, "FAILED")
+        self.assertEqual(evidence.causal_verdict, CausalVerdict.NECESSARY_FOR_OBSERVED_FAILURE)
+        self.assertEqual(evidence.necessary_candidate, "NET-043")
+
+        # Verify candidate counterfactual outcomes
+        candidate_map = {c.candidate_id: c for c in evidence.per_candidate_evidence}
+        self.assertEqual(candidate_map["NET-041"].counterfactual_status.value, "FAILED")
+        self.assertFalse(candidate_map["NET-041"].outcome_changed)
+        self.assertEqual(candidate_map["NET-042"].counterfactual_status.value, "FAILED")
+        self.assertFalse(candidate_map["NET-042"].outcome_changed)
+        self.assertEqual(candidate_map["NET-043"].counterfactual_status.value, "SUCCESS")
+        self.assertTrue(candidate_map["NET-043"].outcome_changed)
+        self.assertEqual(candidate_map["NET-044"].counterfactual_status.value, "FAILED")
+        self.assertFalse(candidate_map["NET-044"].outcome_changed)
+
+        # Verify trace-derived dependency path and divergence
+        self.assertIn("Drug Interaction Gateway", evidence.dependency_path)
+        self.assertIsNotNone(evidence.divergence_event_id)
+
+
 if __name__ == "__main__":
     unittest.main()

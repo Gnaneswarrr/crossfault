@@ -21,6 +21,22 @@ AUTH_TOPOLOGY_PATH = [
 ]
 
 
+ICU_TOPOLOGY_PATH = [
+    "Bedside ICU Monitor",
+    "Telemetry Ingestion Service",
+    "ICU Gateway Router",
+    "Central Clinical Dashboard",
+]
+
+
+PHARMACY_TOPOLOGY_PATH = [
+    "e-Prescribing Portal",
+    "Pharmacy Verification Service",
+    "Drug Interaction Gateway",
+    "Automated Medication Dispenser",
+]
+
+
 def create_initial_scenario() -> Scenario:
     """
     Creates scenario CF-001: Initial healthcare deployment failure scenario.
@@ -140,6 +156,130 @@ def create_cf002_scenario() -> Scenario:
         name="Physician Portal Auth Failure",
         description="Simulated deployment failure caused by a zero-trust firewall rule blocking token exchange.",
         topology_path=AUTH_TOPOLOGY_PATH,
+        candidates=candidates,
+        application_input=app_input,
+    )
+
+
+def create_cf004_scenario() -> Scenario:
+    """
+    Creates scenario CF-004: ICU Telemetry Egress BGP Route Failure.
+
+    Contains 4 network candidates around deployment time:
+    1. ACCESS_RULE_CHANGE (irrelevant background metrics cluster ACL)
+    2. DNS_CHANGE (irrelevant TTL refresh for remote archive)
+    3. ROUTE_CHANGE (causal event blackholing ICU gateway egress traffic)
+    4. LIS_PATH_INTERRUPTION (irrelevant path jitter on secondary backup link)
+    """
+    candidates = [
+        NetworkCandidate(
+            candidate_id="NET-031",
+            candidate_type=CandidateType.ACCESS_RULE_CHANGE,
+            description="Firewall egress ACL modification for background metrics cluster",
+            affected_source="Telemetry Ingestion Service",
+            affected_destination="Metrics Cluster",
+            interrupts_path=False,
+        ),
+        NetworkCandidate(
+            candidate_id="NET-032",
+            candidate_type=CandidateType.DNS_CHANGE,
+            description="Internal DNS TTL refresh for remote telemetry archive",
+            affected_source="Central Clinical Dashboard",
+            affected_destination="Telemetry Archive",
+            interrupts_path=False,
+        ),
+        NetworkCandidate(
+            candidate_id="NET-033",
+            candidate_type=CandidateType.ROUTE_CHANGE,
+            description="BGP route table withdrawal blackholing ICU gateway egress traffic",
+            affected_source="Telemetry Ingestion Service",
+            affected_destination="ICU Gateway Router",
+            interrupts_path=True,
+        ),
+        NetworkCandidate(
+            candidate_id="NET-034",
+            candidate_type=CandidateType.LIS_PATH_INTERRUPTION,
+            description="Background path jitter on secondary legacy backup link",
+            affected_source="ICU Gateway Router",
+            affected_destination="Legacy Backup Link",
+            interrupts_path=False,
+        ),
+    ]
+
+    app_input = ApplicationInput(
+        request_id="REQ-ICU-40081",
+        workload_type="ICUTelemetryStream",
+        target_environment="Production",
+        specimen_type="N/A",
+    )
+
+    return Scenario(
+        scenario_id="CF-004",
+        name="ICU Telemetry Egress BGP Route Failure",
+        description="Simulated ICU telemetry deployment failure caused by BGP route table withdrawal.",
+        topology_path=ICU_TOPOLOGY_PATH,
+        candidates=candidates,
+        application_input=app_input,
+    )
+
+
+def create_cf005_scenario() -> Scenario:
+    """
+    Creates scenario CF-005: EHR Pharmacy Dispense DNS Resolution Failure.
+
+    Contains 4 network candidates around deployment time:
+    1. LIS_PATH_INTERRUPTION (irrelevant path latency on secondary lab sync)
+    2. ACCESS_RULE_CHANGE (irrelevant ACL rule modification for audit logging daemon)
+    3. DNS_CHANGE (causal event mapping Drug Interaction Gateway to unresolvable hostname)
+    4. ROUTE_CHANGE (irrelevant static route maintenance update on secondary interface)
+    """
+    candidates = [
+        NetworkCandidate(
+            candidate_id="NET-041",
+            candidate_type=CandidateType.LIS_PATH_INTERRUPTION,
+            description="Transient path latency on secondary lab sync interface",
+            affected_source="Pharmacy Verification Service",
+            affected_destination="Secondary Lab Sync",
+            interrupts_path=False,
+        ),
+        NetworkCandidate(
+            candidate_id="NET-042",
+            candidate_type=CandidateType.ACCESS_RULE_CHANGE,
+            description="Ingress ACL rule modification for audit logging daemon",
+            affected_source="Drug Interaction Gateway",
+            affected_destination="Audit Logging Server",
+            interrupts_path=False,
+        ),
+        NetworkCandidate(
+            candidate_id="NET-043",
+            candidate_type=CandidateType.DNS_CHANGE,
+            description="Internal DNS CNAME update mapping Drug Interaction Gateway to unresolvable hostname",
+            affected_source="Pharmacy Verification Service",
+            affected_destination="Drug Interaction Gateway",
+            interrupts_path=True,
+        ),
+        NetworkCandidate(
+            candidate_id="NET-044",
+            candidate_type=CandidateType.ROUTE_CHANGE,
+            description="Static route maintenance update on secondary gateway interface",
+            affected_source="Drug Interaction Gateway",
+            affected_destination="Backup Interface",
+            interrupts_path=False,
+        ),
+    ]
+
+    app_input = ApplicationInput(
+        request_id="REQ-PHARM-50092",
+        workload_type="PharmacyMedDispense",
+        target_environment="Production",
+        specimen_type="N/A",
+    )
+
+    return Scenario(
+        scenario_id="CF-005",
+        name="EHR Pharmacy Dispense DNS Resolution Failure",
+        description="Simulated EHR pharmacy dispense failure caused by internal DNS CNAME resolution failure.",
+        topology_path=PHARMACY_TOPOLOGY_PATH,
         candidates=candidates,
         application_input=app_input,
     )

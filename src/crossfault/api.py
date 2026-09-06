@@ -40,10 +40,10 @@ def investigate(scenario: str = "CF-001", seed: int = 48291):
     """
     Run the deterministic investigation and return the verified AI response.
     """
-    if scenario not in ("CF-001", "CF-002"):
+    if scenario not in ("CF-001", "CF-002", "CF-004", "CF-005"):
         raise HTTPException(
             status_code=400, 
-            detail="Invalid scenario. Must be 'CF-001' or 'CF-002'."
+            detail="Invalid scenario. Must be 'CF-001', 'CF-002', 'CF-004', or 'CF-005'."
         )
         
     svc = get_service()

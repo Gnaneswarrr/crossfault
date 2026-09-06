@@ -77,6 +77,8 @@ export default function InvestigationShell() {
             >
               <option value="CF-001">CF-001</option>
               <option value="CF-002">CF-002</option>
+              <option value="CF-004">CF-004</option>
+              <option value="CF-005">CF-005</option>
             </select>
           </div>
           <div className="control-item">

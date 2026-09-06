@@ -6,7 +6,12 @@ from crossfault.analyzer import CausalAnalyzer
 from crossfault.assembler import EvidenceAssembler
 from crossfault.gemini_client import GeminiClient
 from crossfault.replay import ReplayEngine
-from crossfault.scenario import create_cf002_scenario, create_initial_scenario
+from crossfault.scenario import (
+    create_cf002_scenario,
+    create_cf004_scenario,
+    create_cf005_scenario,
+    create_initial_scenario,
+)
 
 
 class InvestigationService:
@@ -36,7 +41,7 @@ class InvestigationService:
         Runs the full deterministic investigation pipeline and AI interpretation.
         
         Args:
-            scenario_id: Either 'CF-001' or 'CF-002'.
+            scenario_id: One of 'CF-001', 'CF-002', 'CF-004', 'CF-005'.
             seed: The deterministic seed for the simulator.
             
         Returns:
@@ -49,6 +54,10 @@ class InvestigationService:
             scenario = create_cf002_scenario()
         elif scenario_id == "CF-001":
             scenario = create_initial_scenario()
+        elif scenario_id == "CF-004":
+            scenario = create_cf004_scenario()
+        elif scenario_id == "CF-005":
+            scenario = create_cf005_scenario()
         else:
             raise ValueError(f"Unknown scenario ID: {scenario_id}")
 
